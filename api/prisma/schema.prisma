@@ -89,7 +89,20 @@ model Product {
 
 model Category {
     id  String @id @default(uuid())
+    name String
+    description String?
+    slug String @unique
+    imageUrl String?
+    isActive Boolean @default(true)
+
     products Product[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([slug])
+    @@index([isActive])
+    @@map("categories")
 }
 
 model OrderItem {
@@ -112,8 +125,20 @@ model OrderItem {
 
 model CartItem {
     id String @id @default(uuid())
+    quantity Int @default(1)
     productId String
     product Product @relation(fields: [productId], references: [id])
+
+    cartId String
+    cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updateAt DateTime @updatedAt
+
+    @@unique([cartId, productId])
+    @@index([cartId])
+    @@index([productId])
+    @@map("carts_items")
 }
 
 model Order {
@@ -147,18 +172,39 @@ model Cart {
    userId String
    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-   orders Order[]   
-}
+   orders Order[]  
+   checkOut Boolean @default(false)
+
+   cartItems CartItem[] 
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+   @@index([userId])
+   @@map("carts")
+} 
 
 model Payment {
     id String @id @default(uuid())
     amount Decimal @db.Decimal(10,2)
     status PaymentStatus @default(PENDING)
+    currency String @default("usd")
+    paymentMethod String?
+    transactionId String?
+
 
     userId String
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    orderId String @unique
+     orderId String @unique
     order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([orderId])
+    @@index([userId])
+    @@index([transactionId])
+    @@map("payments")
 }
 
