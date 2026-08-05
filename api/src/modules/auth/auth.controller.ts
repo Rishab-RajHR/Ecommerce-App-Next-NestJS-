@@ -1,4 +1,4 @@
-import { Body, Controller } from '@nestjs/common';
+import { Body, Controller, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 
@@ -10,4 +10,9 @@ export class AuthController {
     async register(@Body() regsiterDto: RegisterDto): Promise<AuthResponseDto> {
          return await this.authService.register(RegisterDto);
     }
+
+    // Refresh access token
+    @UseGuards(RefreshTokenGuard)
+
+    async refresh() {}
 }
