@@ -17,7 +17,7 @@ export class AuthController {
   }
 
   // Refresh access token
-  @UseGuards(RefreshTokenGuards)
+  @UseGuards(RefreshTokenGuard)
   async refresh(@GetUser('id') userId: string) : Promise<AuthResponseDto> {
      return await this.authService.refreshTokens(userId);
   }
